@@ -97,6 +97,8 @@ public class AuthService {
   }
 
   public void assertOwner(long userId, long authorId) {
-    // TODO BE-03
+    if (userId != authorId) {
+      throw new ApiError(403, "FORBIDDEN", "본인이 작성한 글만 수정·삭제할 수 있습니다.");
+    }
   }
 }

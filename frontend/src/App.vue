@@ -21,6 +21,10 @@ async function run(action, success) {
     message.value = success;
   } catch (e) {
     message.value = e.message;
+    if (e.status === 404) {
+      selected.value = null;
+      try { await refresh(); } catch {}
+    }
   } finally {
     user.value = getSession().user;
     busy.value = false;
@@ -33,6 +37,10 @@ function reset() {
   editing.value = null;
 }
 function save() {
+  if (!getSession().accessToken) {
+    message.value = "글을 쓰려면 먼저 로그인하세요.";
+    return;
+  }
   run(async () => {
     const input = { title: title.value, content: content.value };
     selected.value = editing.value
@@ -78,8 +86,8 @@ function me() {
       </p>
     </header>
     <p class="banner">
-      시작 코드: 인증 미완성 · 글쓰기는 데모 작성자 Alice로 처리됩니다. 인증과
-      권한 검사를 완성한 뒤 안내 문구를 수정하세요.
+      누구나 글을 볼 수 있고, 로그인한 사용자만 글을 쓸 수 있어요. 본인 글만
+      수정·삭제할 수 있고, 새로고침하면 로그인이 해제돼요.
     </p>
     <div role="status" class="message">{{ message }}</div>
     <div class="grid">
